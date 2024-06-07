@@ -196,7 +196,11 @@ def get_movies_category(genre: str = Query(min_length = 5, max_length = 15)) -> 
 
 @app.post('/movies', tags=['Movies'], response_model=dict, status_code=201)
 def add_movies(movie: Movie) -> dict:
-    movies.append(movie)
+    db = Session()
+    new_movie = Movie_db(**movie.model_dump())
+    db.add(new_movie)
+    db.commit()
+    # movies.append(movie)
     return JSONResponse(status_code=201, content = {"message": "Post Movie"})
 
 @app.put('/movies/{id}', tags=['Movies'], response_model=dict, status_code=200)
@@ -224,6 +228,6 @@ def delete_movie(id: str) -> dict:
 @app.post('/login', tags=['Aunth'])
 def login(user: User):
     if user.email == "admin" and user.password == "admin":
-        token: str = create_token(user.dict())
+        token: str = create_token(user.model_dump())
         return JSONResponse(content = token)
     return user
