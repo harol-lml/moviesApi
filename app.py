@@ -3,8 +3,8 @@ from fastapi import FastAPI, Query, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
-from Models.Movies import Movie
-from Models.Users import User
+from models.Movies import Movie
+from models.Users import User
 from jwt_man import create_token, validate_token
 
 app = FastAPI()
