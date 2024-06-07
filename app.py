@@ -5,11 +5,15 @@ from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from models.Movies import Movie
 from models.Users import User
+from models.movies_db import Movie_db
 from jwt_man import create_token, validate_token
+from config.database import Session, engine, Base
 
 app = FastAPI()
 app.title = 'My API Movies'
 app.version = '0.0.0'
+
+Base.metadata.create_all(bind=engine)
 
 class JWTBearer(HTTPBearer):
     async def __call__(self, request: Request):
