@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 class Movie(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     title: str      = Field(max_length = 20)
     year: int       = Field(ge = 1670, le = 2024)
     director: str   = Field(max_length = 20)
