@@ -1,6 +1,5 @@
 from config.database import Base, Session, engine
 from sqlalchemy import Column, Integer, String, Float
-from models.Movies import Movie
 import uuid
 
 class Movie_db(Base):
@@ -22,3 +21,14 @@ class Movie_db(Base):
         db.commit()
         db.close()
         return True
+
+    def getAll():
+        db = Session()
+        movies = db.query(Movie_db).all()
+        db.close()
+        return movies
+
+    def getById(id):
+        db = Session()
+        movie = db.query(Movie_db).filter(Movie_db.id == id).first()
+        return movie

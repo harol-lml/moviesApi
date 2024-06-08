@@ -2,18 +2,16 @@ from typing import Union, List
 from fastapi import FastAPI, Query, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer
+from fastapi.encoders import jsonable_encoder
 from fastapi.security.http import HTTPAuthorizationCredentials
 from models.Movies import Movie
 from models.Users import User
 from models.movies_db import Movie_db
 from jwt_man import create_token, validate_token
-from config.database import Session, engine, Base
 
 app = FastAPI()
 app.title = 'My API Movies'
 app.version = '0.0.0'
-
-Base.metadata.create_all(bind=engine)
 
 class JWTBearer(HTTPBearer):
     async def __call__(self, request: Request):
@@ -178,12 +176,14 @@ movies = [
 @app.get('/movies', tags=['Movies'], response_model = List[Movie], status_code=200, dependencies=[Depends(JWTBearer())])
 def get_movies(id: Union[str, None] = None) -> List[Movie]:
     if id:
-        mv = []
-        for movie in movies:
-            if movie['id'] == id:
-                mv.append(movie)
-        return JSONResponse(status_code=200, content = mv)
-    return JSONResponse(status_code=200, content = movies)
+        moviesdb = Movie_db.getById(id)
+    else:
+        moviesdb = Movie_db.getAll()
+
+    if not moviesdb:
+            return JSONResponse(status_code=403, content =  {"message": "Error get movie"})
+
+    return JSONResponse(status_code=200, content = jsonable_encoder(moviesdb))
 
 @app.get('/movies/', tags=['Movies'], response_model = List[Movie], status_code=200)
 def get_movies_category(genre: str = Query(min_length = 5, max_length = 15)) -> List[Movie]:
