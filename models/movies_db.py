@@ -1,5 +1,6 @@
-from config.database import Base
+from config.database import Base, Session, engine
 from sqlalchemy import Column, Integer, String, Float
+from models.Movies import Movie
 import uuid
 
 class Movie_db(Base):
@@ -13,3 +14,11 @@ class Movie_db(Base):
     poster   = Column(String)
     genre    = Column(String)
     rate     = Column(Float)
+
+    def save (self):
+        Base.metadata.create_all(bind = engine)
+        db = Session()
+        db.add(self)
+        db.commit()
+        db.close()
+        return True

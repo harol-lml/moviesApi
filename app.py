@@ -196,12 +196,11 @@ def get_movies_category(genre: str = Query(min_length = 5, max_length = 15)) -> 
 
 @app.post('/movies', tags=['Movies'], response_model=dict, status_code=201)
 def add_movies(movie: Movie) -> dict:
-    db = Session()
     new_movie = Movie_db(**movie.model_dump())
-    db.add(new_movie)
-    db.commit()
-    # movies.append(movie)
-    return JSONResponse(status_code=201, content = {"message": "Post Movie"})
+    if new_movie.save():
+        return JSONResponse(status_code=201, content = {"message": "Post Movie"})
+
+    return JSONResponse(status_code=400, content = {"message": "Error post movie"})
 
 @app.put('/movies/{id}', tags=['Movies'], response_model=dict, status_code=200)
 def update_movie(id: str, mov: Movie) -> dict:
