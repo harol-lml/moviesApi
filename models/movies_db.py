@@ -31,4 +31,11 @@ class Movie_db(Base):
     def getById(id):
         db = Session()
         movie = db.query(Movie_db).filter(Movie_db.id == id).first()
+        db.close()
+        return movie
+
+    def getByGenre(genre):
+        db = Session()
+        movie = db.query(Movie_db).filter(Movie_db.genre == genre).all()
+        db.close()
         return movie

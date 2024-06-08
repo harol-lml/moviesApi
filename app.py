@@ -181,18 +181,17 @@ def get_movies(id: Union[str, None] = None) -> List[Movie]:
         moviesdb = Movie_db.getAll()
 
     if not moviesdb:
-            return JSONResponse(status_code=403, content =  {"message": "Error get movie"})
+            return JSONResponse(status_code=404, content =  {"message": "Error get movie"})
 
     return JSONResponse(status_code=200, content = jsonable_encoder(moviesdb))
 
 @app.get('/movies/', tags=['Movies'], response_model = List[Movie], status_code=200)
 def get_movies_category(genre: str = Query(min_length = 5, max_length = 15)) -> List[Movie]:
-    mv = []
-    for movie in movies:
-        for gene in movie['genre']:
-            if gene == genre:
-                mv.append(movie)
-    return JSONResponse(status_code=200, content = mv)
+    moviesdb = Movie_db.getByGenre(genre)
+    if not moviesdb:
+            return JSONResponse(status_code=404, content =  {"message": "Error get movie"})
+
+    return JSONResponse(status_code=200, content = jsonable_encoder(moviesdb))
 
 @app.post('/movies', tags=['Movies'], response_model=dict, status_code=201)
 def add_movies(movie: Movie) -> dict:
