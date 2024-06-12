@@ -1,26 +1,19 @@
 from typing import Union, List
-from fastapi import FastAPI, Query, Request, HTTPException, Depends
+from fastapi import FastAPI, Query, Depends
 from fastapi.responses import JSONResponse
-from fastapi.security import HTTPBearer
 from fastapi.encoders import jsonable_encoder
-from fastapi.security.http import HTTPAuthorizationCredentials
 from models.Movies import Movie
 from models.Users import User
 from models.movies_db import Movie_db
-from jwt_man import create_token, validate_token
+from jwt_man import create_token
 from middlewares.error_handler import ErrorHandler
+from middlewares.jwt_bearer import JWTBearer
 
 app = FastAPI()
 app.title = 'My API Movies'
 app.version = '0.0.0'
 
 app.add_middleware(ErrorHandler)
-class JWTBearer(HTTPBearer):
-    async def __call__(self, request: Request):
-        aunth = await super().__call__(request)
-        data = validate_token(aunth.credentials)
-        if data['email'] != "admin":
-            raise HTTPException(status_code=403, detail="Invalid credentials")
 
 movies = [
     {
@@ -175,7 +168,7 @@ movies = [
     }
 ]
 
-@app.get('/movies', tags=['Movies'], response_model = List[Movie], status_code=200)#, dependencies=[Depends(JWTBearer())]
+@app.get('/movies', tags=['Movies'], response_model = List[Movie], status_code=200, dependencies=[Depends(JWTBearer())])#, dependencies=[Depends(JWTBearer())]
 def get_movies(id: Union[str, None] = None) -> List[Movie]:
     if id:
         moviesdb = Movie_db.getById(id)
