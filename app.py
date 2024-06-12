@@ -8,11 +8,13 @@ from models.Movies import Movie
 from models.Users import User
 from models.movies_db import Movie_db
 from jwt_man import create_token, validate_token
+from middlewares.error_handler import ErrorHandler
 
 app = FastAPI()
 app.title = 'My API Movies'
 app.version = '0.0.0'
 
+app.add_middleware(ErrorHandler)
 class JWTBearer(HTTPBearer):
     async def __call__(self, request: Request):
         aunth = await super().__call__(request)
