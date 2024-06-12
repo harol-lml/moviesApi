@@ -173,7 +173,7 @@ movies = [
     }
 ]
 
-@app.get('/movies', tags=['Movies'], response_model = List[Movie], status_code=200, dependencies=[Depends(JWTBearer())])
+@app.get('/movies', tags=['Movies'], response_model = List[Movie], status_code=200)#, dependencies=[Depends(JWTBearer())]
 def get_movies(id: Union[str, None] = None) -> List[Movie]:
     if id:
         moviesdb = Movie_db.getById(id)
@@ -203,6 +203,11 @@ def add_movies(movie: Movie) -> dict:
 
 @app.put('/movies/{id}', tags=['Movies'], response_model=dict, status_code=200)
 def update_movie(id: str, mov: Movie) -> dict:
+    moviesdb = Movie_db.update(id, mov)
+    if moviesdb: return JSONResponse(status_code=200, content = {"messge": "Updated movie"})
+
+    return JSONResponse(status_code=404, content = {"error": "Movie not found"})
+
     for movie in movies:
         if movie['id'] == id:
             movie['title']    = mov.title
@@ -217,6 +222,10 @@ def update_movie(id: str, mov: Movie) -> dict:
 
 @app.delete('/movies/{id}', tags=['Movies'], response_model=dict, status_code=200)
 def delete_movie(id: str) -> dict:
+    moviesdb = Movie_db.delete(id)
+    if moviesdb: return JSONResponse(status_code=200, content = {"messge": "Deleted movie"})
+
+    return JSONResponse(status_code=404, content = {"error": "Movie not found"})
     for movie in movies:
         if movie['id'] == id:
             movies.remove(movie)

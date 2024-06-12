@@ -1,5 +1,6 @@
 from config.database import Base, Session, engine
 from sqlalchemy import Column, Integer, String, Float
+from models.Movies import Movie
 import uuid
 
 class Movie_db(Base):
@@ -39,3 +40,28 @@ class Movie_db(Base):
         movie = db.query(Movie_db).filter(Movie_db.genre == genre).all()
         db.close()
         return movie
+
+    def update(id, mv: Movie):
+        db = Session()
+        movie = db.query(Movie_db).filter(Movie_db.id == id).first()
+        if not movie: return False
+
+        movie.title = mv.title
+        movie.year = mv.year
+        movie.director = mv.director
+        movie.duration = mv.duration
+        movie.poster = mv.poster
+        movie.genre = mv.genre
+        movie.rate = mv.rate
+        db.commit()
+        db.close()
+        return True
+
+    def delete(id):
+        db = Session()
+        movie = db.query(Movie_db).filter(Movie_db.id == id).first()
+        if not movie: return False
+        db.delete(movie)
+        db.commit()
+        db.close()
+        return True
